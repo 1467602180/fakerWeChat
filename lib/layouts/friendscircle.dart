@@ -1,5 +1,7 @@
 import 'dart:typed_data';
-
+import 'package:fakewechat/compents/animaterouter.dart';
+import 'package:fakewechat/layouts/pushfriendscircle.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -14,7 +16,7 @@ class _FriendsCircleState extends State<FriendsCircle> {
   Box box = Hive.box('hive');
   Uint8List imageData = Uint8List(0);
   String username = '';
-  Uint8List aver = Uint8List(0);
+  String aver = '';
   ScrollController scrollController = ScrollController();
   String title = '';
   bool isScroll = false;
@@ -37,11 +39,26 @@ class _FriendsCircleState extends State<FriendsCircle> {
         });
       }
     });
+    getData();
+  }
+
+  getData()async{
+    List<Map> userInfo = await SqliteTool().getUserInfo();
+    List<Map> list = List.from(await SqliteTool().selectBaseReverse('friendscircle'));
+    List<Map> dataList = [];
+    for(var i in list){
+      List<Map> imagesList = await SqliteTool().selectFriendsCircleImages(i['id']);
+      Map userInfo = await SqliteTool().selectUser(i['user']);
+      Map dataMap = Map.from(i);
+      dataMap['user'] = userInfo;
+      dataMap['images'] = imagesList;
+      dataList.add(dataMap);
+    }
     setState(() {
+      username = userInfo[0]['username'];
+      aver = userInfo[0]['aver'];
+      friendsCircle = dataList;
       imageData = box.get('friendsCircleImage', defaultValue: Uint8List(0));
-      username = box.get('username');
-      aver = box.get('aver', defaultValue: Uint8List(0));
-      friendsCircle = box.get('friendsCircle');
     });
   }
 
@@ -79,7 +96,9 @@ class _FriendsCircleState extends State<FriendsCircle> {
                           Icons.camera_alt,
                           color: isScroll ? Colors.black : Colors.white,
                         ),
-                        onPressed: () {})
+                        onPressed: () {
+                          Navigator.of(context).push(AnimateRouter(PushFriendsCircle())).then((value) => getData());
+                        })
                   ],
                   flexibleSpace: FlexibleSpaceBar(
                     title: Text(
@@ -151,11 +170,11 @@ class _FriendsCircleState extends State<FriendsCircle> {
                                 child: imageData.isEmpty
                                     ? Image.asset(
                                         'assets/images/friendscircle/default-friendscircle.png',
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                       )
                                     : Image.memory(
                                         imageData,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                       ),
                               ),
                               Flexible(
@@ -191,13 +210,13 @@ class _FriendsCircleState extends State<FriendsCircle> {
                                     borderRadius: BorderRadius.circular(4),
                                     child: aver.isEmpty
                                         ? Image.asset(
-                                            'assets/images/my/def_avatar.png',
-                                            fit: BoxFit.fill,
-                                          )
-                                        : Image.memory(
-                                            aver,
-                                            fit: BoxFit.fill,
-                                          ),
+                                      'assets/images/my/def_avatar.png',
+                                      fit: BoxFit.fill,
+                                    )
+                                        : Image.network(
+                                      aver,
+                                      fit: BoxFit.fill,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -238,7 +257,7 @@ class _FriendsCircleState extends State<FriendsCircle> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(4),
                           child: Image.network(
-                            friendsCircle[index]['aver'],
+                            friendsCircle[index]['user']['aver'],
                             width: 36,
                             height: 36,
                             fit: BoxFit.fill,
@@ -254,7 +273,7 @@ class _FriendsCircleState extends State<FriendsCircle> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              friendsCircle[index]['user'],
+                              friendsCircle[index]['user']['username'],
                               style: TextStyle(
                                   color: Color(0xff57687e),
                                   fontWeight: FontWeight.bold),
@@ -292,7 +311,7 @@ class _FriendsCircleState extends State<FriendsCircle> {
                                         return Container(
                                           child: Image.network(
                                             friendsCircle[index]['images']
-                                                [imageIndex],
+                                                [imageIndex]['image'],
                                             fit: BoxFit.fill,
                                             loadingBuilder: (context,child,progress){
                                               if(progress==null){

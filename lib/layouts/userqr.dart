@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:faker/faker.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -15,8 +16,8 @@ class UserQR extends StatefulWidget {
 class _UserQRState extends State<UserQR> {
   Box box = Hive.box('hive');
   String username = '';
-  Uint8List imageData = Uint8List(0);
-  String address = faker.address.city();
+  String imageData = '';
+  String address = '';
   bool gender = Random().nextBool();
   GlobalKey globalKey = GlobalKey();
   double height = 0;
@@ -203,13 +204,13 @@ class _UserQRState extends State<UserQR> {
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                             child: imageData.isEmpty
                                 ? Image.asset(
-                                    'assets/images/my/def_avatar.png',
-                                    fit: BoxFit.fill,
-                                  )
-                                : Image.memory(
-                                    imageData,
-                                    fit: BoxFit.fill,
-                                  )),
+                              'assets/images/my/def_avatar.png',
+                              fit: BoxFit.fill,
+                            )
+                                : Image.network(
+                              imageData,
+                              fit: BoxFit.fill,
+                            ),),
                         margin: EdgeInsets.only(right: 8),
                       ),
                       Column(
@@ -264,10 +265,12 @@ class _UserQRState extends State<UserQR> {
     );
   }
 
-  void getData() {
+  void getData() async{
+    List<Map> list = await SqliteTool().getUserInfo();
     setState(() {
-      username = box.get('username');
-      imageData = box.get('aver', defaultValue: Uint8List(0));
+      username = list[0]['username'];
+      imageData = list[0]['aver'];
+      address = list[0]['city'];
     });
   }
 }

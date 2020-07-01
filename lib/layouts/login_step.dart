@@ -5,6 +5,7 @@ import 'package:faker/faker.dart';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/config/config.dart';
 import 'package:fakewechat/layouts/home.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -246,5 +247,12 @@ class _LoginStepState extends State<LoginStep> {
       }
     }
     box.put('chatUser', chatUser);
+    initDataBase();
+  }
+
+  void initDataBase() async{
+    await SqliteTool().initAddress();
+    await SqliteTool().initFriendsCircle();
+    await SqliteTool().initChat();
   }
 }

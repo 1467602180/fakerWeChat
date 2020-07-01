@@ -1,13 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/updateuser.dart';
 import 'package:fakewechat/layouts/updateusername.dart';
 import 'package:fakewechat/layouts/userqr.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UserInfo extends StatefulWidget {
   @override
@@ -16,7 +14,7 @@ class UserInfo extends StatefulWidget {
 
 class _UserInfoState extends State<UserInfo> {
   Box box = Hive.box('hive');
-  Uint8List imageData = Uint8List(0);
+  String imageData = '';
   String user = '';
   String username = '';
 
@@ -83,7 +81,7 @@ class _UserInfoState extends State<UserInfo> {
                                       'assets/images/my/def_avatar.png',
                                       fit: BoxFit.fill,
                                     )
-                                  : Image.memory(
+                                  : Image.network(
                                       imageData,
                                       fit: BoxFit.fill,
                                     ),
@@ -108,7 +106,9 @@ class _UserInfoState extends State<UserInfo> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(AnimateRouter(UpdateUserName())).then((value) => getData());
+                Navigator.of(context)
+                    .push(AnimateRouter(UpdateUserName()))
+                    .then((value) => getData());
               },
               child: Container(
                 height: 50,
@@ -272,9 +272,10 @@ class _UserInfoState extends State<UserInfo> {
                           ),
                           Flexible(
                               child: Container(
-                                  width: double.infinity,
-                                  alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.symmetric(vertical: 8),)),
+                            width: double.infinity,
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                          )),
                           Icon(
                             Icons.chevron_right,
                             color: Color(0xffbdbdbd),
@@ -313,9 +314,10 @@ class _UserInfoState extends State<UserInfo> {
                           ),
                           Flexible(
                               child: Container(
-                                  width: double.infinity,
-                                  alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.symmetric(vertical: 8),)),
+                            width: double.infinity,
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                          )),
                           Icon(
                             Icons.chevron_right,
                             color: Color(0xffbdbdbd),
@@ -339,20 +341,21 @@ class _UserInfoState extends State<UserInfo> {
     );
   }
 
-  void getData() {
+  void getData() async {
+    List<Map> list = await SqliteTool().getUserInfo();
     setState(() {
-      username = box.get('username');
-      user = box.get('user');
-      imageData = box.get('aver', defaultValue: Uint8List(0));
+      username = list[0]['username'];
+      user = list[0]['user'];
+      imageData = list[0]['aver'];
     });
   }
 
-  void selectImage() async{
-    final image = await ImagePicker().getImage(source: ImageSource.gallery);
-    Uint8List imgData = await image.readAsBytes();
-    box.put('aver', imgData);
-    setState(() {
-      imageData = imgData;
-    });
+  void selectImage() async {
+//    final image = await ImagePicker().getImage(source: ImageSource.gallery);
+//    Uint8List imgData = await image.readAsBytes();
+//    box.put('aver', imgData);
+//    setState(() {
+//      imageData = imgData;
+//    });
   }
 }

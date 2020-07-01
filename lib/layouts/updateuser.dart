@@ -1,3 +1,4 @@
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -92,9 +93,10 @@ class _UpdateUserState extends State<UpdateUser> {
     );
   }
 
-  void getData() {
+  void getData()async {
+    List<Map> list = await SqliteTool().getUserInfo();
     setState(() {
-      user = box.get('user');
+      user = list[0]['user'];
     });
   }
 }

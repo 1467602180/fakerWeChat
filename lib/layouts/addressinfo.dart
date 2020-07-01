@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +70,7 @@ class _AddressInfoState extends State<AddressInfo> {
                       height: 4,
                     ),
                     Text(
-                      '地区：' + widget.info['address'],
+                      '地区：' + widget.info['city'],
                       style: TextStyle(
                           color: Color(0xff6a6a6a),
                           fontSize: 14,

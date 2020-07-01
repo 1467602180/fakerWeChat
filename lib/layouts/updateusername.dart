@@ -1,3 +1,4 @@
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -61,13 +62,14 @@ class _UpdateUserNameState extends State<UpdateUserName> {
     );
   }
 
-  void getData() {
-    username = box.get('username');
-    textEditingController.text = username;
+  void getData()async {
+    List<Map> list = await SqliteTool().getUserInfo();
+    textEditingController.text = list[0]['username'];
   }
 
-  void Update() {
-    box.put('username', textEditingController.text);
+  void Update() async{
+    List<Map> list = await SqliteTool().getUserInfo();
+    SqliteTool().updateUserInfo(textEditingController.text, list[0]['aver']);
     Navigator.of(context).pop();
   }
 }

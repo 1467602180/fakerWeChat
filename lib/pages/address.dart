@@ -1,5 +1,7 @@
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/addressinfo.dart';
+import 'package:fakewechat/layouts/edituserinfo.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -18,9 +20,10 @@ class _AddressState extends State<Address> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-      address = box.get('address');
-    });
+//    setState(() {
+//      address = box.get('address');
+//    });
+    getData();
   }
 
   @override
@@ -380,6 +383,9 @@ class _AddressState extends State<Address> {
           onTap: () {
             Navigator.of(context).push(AnimateRouter(AddressInfo(info: i,)));
           },
+          onLongPress: (){
+            Navigator.of(context).push(AnimateRouter(EditUserInfo(info:i))).then((value) => getData());
+          },
           child: Container(
             height: 48,
             color: Colors.white,
@@ -424,5 +430,31 @@ class _AddressState extends State<Address> {
       );
     }
     return list;
+  }
+
+  void getData()async {
+    List list = [];
+    List<Map> initList = List.from(await SqliteTool().selectBase('address'));
+    initList.removeAt(0);
+    List surnameList = [];
+    for(var i in initList){
+      surnameList.add(i['surname']);
+    }
+    surnameList.sort();
+    Set surnameSet = Set.from(surnameList);
+    for(var i in surnameSet){
+      Map dataMap = {};
+      List dataList = [];
+      for(var j in initList){
+        if(i==j['surname']){
+          dataList.add(j);
+        }
+      }
+      dataMap[i] = dataList;
+      list.add(dataMap);
+    }
+    setState(() {
+      address = list;
+    });
   }
 }

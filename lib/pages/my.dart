@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/login.dart';
 import 'package:fakewechat/layouts/userinfo.dart';
+import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -15,7 +16,7 @@ class My extends StatefulWidget {
 class _MyState extends State<My> {
   Box box = Hive.box('hive');
   String username = '';
-  Uint8List imageData = Uint8List(0);
+  String imageData = '';
   String user = '';
 
   @override
@@ -58,8 +59,11 @@ class _MyState extends State<My> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(4)),
                           child: imageData.isEmpty
-                              ? Image.asset('assets/images/my/def_avatar.png')
-                              : Image.memory(
+                              ? Image.asset(
+                                  'assets/images/my/def_avatar.png',
+                                  fit: BoxFit.fill,
+                                )
+                              : Image.network(
                                   imageData,
                                   fit: BoxFit.fill,
                                 ),
@@ -81,7 +85,8 @@ class _MyState extends State<My> {
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context)
-                                  .push(AnimateRouter(UserInfo())).then((value) => getData());
+                                  .push(AnimateRouter(UserInfo()))
+                                  .then((value) => getData());
                             },
                             child: Container(
                               height: 25,
@@ -402,6 +407,7 @@ class _MyState extends State<My> {
             GestureDetector(
               onTap: () {
                 box.put('haveLogin', false);
+                SqliteTool().deleteBase();
                 Navigator.of(context).pushReplacement(AnimateRouter(Login()));
               },
               child: Container(
@@ -464,11 +470,13 @@ class _MyState extends State<My> {
     );
   }
 
-  void getData() {
+  void getData() async {
+
+    List<Map> list = await SqliteTool().getUserInfo();
     setState(() {
-      username = box.get('username');
-      user = box.get('user');
-      imageData = box.get('aver', defaultValue: Uint8List(0));
+      username = list[0]['username'];
+      user = list[0]['user'];
+      imageData = list[0]['aver'];
     });
   }
 }
