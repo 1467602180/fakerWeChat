@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -169,7 +170,7 @@ VALUES
         await txn.rawInsert('''INSERT INTO `chatuser` (`user`) 
 VALUES
   ('$i') ''');
-        for (var j = 0; j < 10; j++) {
+        for (var j = 1; j < 10; j++) {
           String typeValue = type[Random().nextInt(3)];
           await txn.rawInsert('''INSERT INTO `chatcontent` (
   `chat`,
@@ -182,7 +183,7 @@ VALUES
     '${typeValue == 'content' ? contentData['data'][Random().nextInt(1000)] : typeValue == 'image' ? imagesData['data'][Random().nextInt(1000)] : ''}',
     '$typeValue',
     '${before[Random().nextInt(2)]}',
-    '${i - 1}'
+    '$i'
   ) ''');
         }
       });
@@ -206,8 +207,7 @@ VALUES
 
   Future<List<Map>> getChatContentRever(id) async {
     Database database = await openBase();
-    List<Map> list =
-    await database.rawQuery('SELECT * FROM chatcontent where user = $id order by id desc');
+    List<Map> list = await database.rawQuery('SELECT * FROM chatcontent where user = ${id+1}');
     return list;
   }
 
@@ -224,6 +224,25 @@ VALUES
   (
     '$content',
     'content',
+    'my',
+    '$id'
+  ) ''');
+    });
+  }
+
+  Future sendChatImage(content,id) async {
+    Database database = await openBase();
+    await database.transaction((txn) async {
+      await txn.rawInsert('''INSERT INTO `chatcontent` (
+  `chat`,
+  `type`,
+  `before`,
+  `user`
+) 
+VALUES
+  (
+    '$content',
+    'image',
     'my',
     '$id'
   ) ''');
