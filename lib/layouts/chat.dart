@@ -1,11 +1,18 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/addressinfo.dart';
+import 'package:fakewechat/layouts/catlocation.dart';
+import 'package:fakewechat/layouts/location.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../compents/animaterouter.dart';
+import '../tools/sqlitetool.dart';
 
 class Chat extends StatefulWidget {
   final Map chatData;
@@ -151,11 +158,24 @@ class _ChatState extends State<Chat> {
                         textInputAction: TextInputAction.send,
                         onSubmitted: (value) {
                           if (value.isNotEmpty) {
-                            SqliteTool()
-                                .sendChatContent(value, widget.chatData['id'])
-                                .then((value) {
-                              textEditingController.text = '';
-                              getData();
+                            SqliteTool().vChatUser(widget.chatData['id']).then((v){
+                              if(v){
+                                SqliteTool()
+                                    .sendChatContent(value, widget.chatData['id'])
+                                    .then((value) {
+                                  textEditingController.text = '';
+                                  getData();
+                                });
+                              }else{
+                                SqliteTool().addChatUser(widget.chatData['id']).then((_){
+                                  SqliteTool()
+                                      .sendChatContent(value, widget.chatData['id'])
+                                      .then((value) {
+                                    textEditingController.text = '';
+                                    getData();
+                                  });
+                                });
+                              }
                             });
                           }
                         },
@@ -272,7 +292,13 @@ class _ChatState extends State<Chat> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(AnimateRouter(LocationView())).then((value){
+                                if(value!=null){
+                                  sendLocation(value);
+                                }
+                              });
+                            },
                             child: Container(
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
@@ -451,10 +477,81 @@ class _ChatState extends State<Chat> {
                     onTap: () {
                       Navigator.of(context).pop();
                     },
-                    onLongPress: () {},
+                    onLongPress: () {
+//                      showModalBottomSheet(
+//                        context: context,
+//                        builder: (context) {
+//                          return Column(
+//                            mainAxisSize: MainAxisSize.min,
+//                            children: [
+//                              GestureDetector(
+//                                child: Container(
+//                                  height: 50,
+//                                  decoration: BoxDecoration(
+//                                    color: Colors.white,
+//                                  ),
+//                                  child: Text(
+//                                    '保存到手机',
+//                                    style: TextStyle(
+//                                        fontSize: 16, fontWeight: FontWeight.w600),
+//                                  ),
+//                                  alignment: Alignment.center,
+//                                ),
+//                                onTap: () {},
+//                              ),
+//                              Divider(
+//                                height: 0.5,
+//                                color: Color(0xfff1f1f1),
+//                              ),
+//                              GestureDetector(
+//                                child: Container(
+//                                  height: 50,
+//                                  decoration: BoxDecoration(
+//                                    color: Colors.white,
+//                                  ),
+//                                  child: Text(
+//                                    '扫描二维码',
+//                                    style: TextStyle(
+//                                        fontSize: 16, fontWeight: FontWeight.w600),
+//                                  ),
+//                                  alignment: Alignment.center,
+//                                ),
+//                                onTap: () {
+//                                  readQR(dataList['chat']);
+//                                },
+//                              ),
+//                              Divider(
+//                                height: 0.5,
+//                                color: Color(0xfff1f1f1),
+//                              ),
+//                              Container(height: 10,color: Color(0xfff6f6f6),),
+//                              GestureDetector(
+//                                child: Container(
+//                                  height: 50,
+//                                  decoration: BoxDecoration(
+//                                    color: Colors.white,
+//                                  ),
+//                                  child: Text(
+//                                    '取消',
+//                                    style: TextStyle(
+//                                        fontSize: 16, fontWeight: FontWeight.w600),
+//                                  ),
+//                                  alignment: Alignment.center,
+//                                ),
+//                                onTap: () {
+//                                  Navigator.of(context).pop();
+//                                },
+//                              ),
+//                            ],
+//                          );
+//                        },
+//                        backgroundColor: Colors.transparent,
+//                      );
+                    },
                     child: Image.network(
                       dataList['chat'],
                       fit: BoxFit.contain,
+                      width: MediaQuery.of(context).size.width*0.95,
                     )),
               ),
             );
@@ -471,12 +568,27 @@ class _ChatState extends State<Chat> {
         ),
       );
     } else {
-      widget = Container(
-        width: 60,
-        height: 60,
-        color: Colors.white,
-        alignment: Alignment.center,
-        child: Text('定位占位'),
+      widget = GestureDetector(
+        onTap: (){
+          Navigator.of(context).push(AnimateRouter(CatLocation(location: json.decode(dataList['chat']))));
+        },
+        child: Container(
+          width: 200,
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8)
+          ),
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.all(16),
+                child: Text(json.decode(dataList['chat'])['address'],maxLines: 1,overflow: TextOverflow.ellipsis,style: TextStyle(fontSize: 16),),
+              ),
+              Image.asset('assets/images/location/map.png',fit: BoxFit.fill,width: 200,height: 130,)
+            ],
+          ),
+        ),
       );
     }
     return widget;
@@ -514,4 +626,11 @@ class _ChatState extends State<Chat> {
           );
         });
   }
+
+  void sendLocation(value)async {
+    await SqliteTool().sendLocation(widget.chatData['id'],value );
+    getData();
+  }
+
+
 }

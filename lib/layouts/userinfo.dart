@@ -3,6 +3,7 @@ import 'package:fakewechat/layouts/updateuser.dart';
 import 'package:fakewechat/layouts/updateusername.dart';
 import 'package:fakewechat/layouts/userqr.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
+import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -351,11 +352,27 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   void selectImage() async {
-//    final image = await ImagePicker().getImage(source: ImageSource.gallery);
-//    Uint8List imgData = await image.readAsBytes();
-//    box.put('aver', imgData);
-//    setState(() {
-//      imageData = imgData;
-//    });
+    TextEditingController textEditingController = TextEditingController();
+    showDialog(context: context,builder: (context){
+      return AlertDialog(
+        title: Text('更换头像'),
+        content: TextField(
+          controller: textEditingController,
+          decoration: InputDecoration(
+              hintText: '输入头像链接'
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('取消')),
+          FlatButton(onPressed: (){
+            if(textEditingController.text.isNotEmpty&&RegexUtil.isURL(textEditingController.text)){
+              SqliteTool().updateUserInfo(username, textEditingController.text);
+              getData();
+              Navigator.of(context).pop();
+            }
+          }, child: Text('确定')),
+        ],
+      );
+    });
   }
 }

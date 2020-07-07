@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../compents/animaterouter.dart';
+import 'chat.dart';
+
 class AddressInfo extends StatefulWidget {
   final Map info;
 
@@ -251,7 +254,9 @@ class _AddressInfoState extends State<AddressInfo> {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(AnimateRouter(Chat(chatData: widget.info)));
+            },
             child: Container(
 //              margin: EdgeInsets.only(bottom: 10),
               height: 55,

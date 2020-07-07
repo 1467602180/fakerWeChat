@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:fakewechat/layouts/run.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,6 +37,8 @@ class MyApp extends StatelessWidget {
         "Run":(context)=>Run(),
       },
       initialRoute: 'Run',
+      builder: BotToastInit(),
+      navigatorObservers: [BotToastNavigatorObserver()],
     );
   }
 }

@@ -171,7 +171,7 @@ VALUES
 VALUES
   ('$i') ''');
         for (var j = 1; j < 10; j++) {
-          String typeValue = type[Random().nextInt(3)];
+          String typeValue = type[Random().nextInt(2)];
           await txn.rawInsert('''INSERT INTO `chatcontent` (
   `chat`,
   `type`,
@@ -191,6 +191,27 @@ VALUES
     print('生成聊天信息');
   }
 
+  sendLocation(int id , Map map)async{
+    Database database = await openBase();
+    await database.transaction((txn) async {
+      await txn.rawInsert('''INSERT INTO `chatcontent` (
+  `chat`,
+  `type`,
+  `before`,
+  `user`
+)
+VALUES
+  (
+    '${json.encode(map)}',
+    'location',
+    'my',
+    '$id'
+  ) ''');
+    });
+    print('发送定位');
+    print(map);
+  }
+
   Future<Map> getAddressInfo(id) async {
     Database database = await openBase();
     Map data =
@@ -207,7 +228,7 @@ VALUES
 
   Future<List<Map>> getChatContentRever(id) async {
     Database database = await openBase();
-    List<Map> list = await database.rawQuery('SELECT * FROM chatcontent where user = ${id+1}');
+    List<Map> list = await database.rawQuery('SELECT * FROM chatcontent where user = $id');
     return list;
   }
 
@@ -249,13 +270,33 @@ VALUES
     });
   }
 
+  Future<bool> vChatUser(addressId)async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery('SELECT * FROM chatuser where user = $addressId');
+    if(list.isEmpty){
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  Future<int> addChatUser(addressId)async{
+    Database database = await openBase();
+    await database.transaction((txn) async {
+      int state = await txn.rawInsert('''INSERT INTO `chatuser` (`user`) 
+VALUES
+  ('$addressId') ''');
+      return state;
+    });
+  }
+
   Future<List<Map>> getChatUser() async {
     Database database = await openBase();
     List<Map> dataList = [];
     List<Map> list = await database.rawQuery('SELECT * FROM chatuser');
     for (var i in list) {
       Map userDataMap = await getAddressInfo(i['user']);
-      List<Map> chatContentList = await getChatContentRever(i['id']);
+      List<Map> chatContentList = await getChatContentRever(i['user']);
       Map dataMap = Map.from(userDataMap);
       dataMap['chat'] = chatContentList;
       dataList.add(dataMap);
