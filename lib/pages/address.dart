@@ -1,6 +1,8 @@
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/addressinfo.dart';
+import 'package:fakewechat/layouts/chatpublic.dart';
 import 'package:fakewechat/layouts/edituserinfo.dart';
+import 'package:fakewechat/layouts/search.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,9 @@ class _AddressState extends State<Address> {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
           actions: [
-            IconButton(icon: Icon(Icons.search), onPressed: () {}),
+            IconButton(icon: Icon(Icons.search), onPressed: () {
+              Navigator.of(context).push(AnimateRouter(Search()));
+            }),
             IconButton(icon: Icon(Icons.add_circle_outline), onPressed: () {}),
           ],
         ),
@@ -177,7 +181,9 @@ class _AddressState extends State<Address> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(AnimateRouter(ChatPublic()));
+                    },
                     child: Container(
                       height: 48,
                       color: Colors.white,

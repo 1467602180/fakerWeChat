@@ -50,6 +50,20 @@ class SqliteTool {
   `user` INT NOT NULL,
   CONSTRAINT `chatContent_user` FOREIGN KEY (`user`) REFERENCES `chatuser`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 )''');
+//      公众号数据库
+      await db.execute('''CREATE TABLE `chatPublic`(  
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `publicname` VARCHAR(20) NOT NULL,
+  `aver` TEXT NOT NULL,
+  `autoChat` TEXT
+)''');
+      await db.execute('''CREATE TABLE `chatPublicContent`(  
+  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+  `chat` TEXT NOT NULL,
+  `before` VARCHAR(10) NOT NULL,
+  `publicId` INT NOT NULL,
+  CONSTRAINT `chatPublicContent_publicId` FOREIGN KEY (`publicId`) REFERENCES `chatPublic`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+)''');
     });
     return database;
   }
@@ -157,6 +171,134 @@ VALUES
     print('生成通讯录');
   }
 
+//  生成公众号
+  void initChatPublic() async {
+    Database database = await openBase();
+    Map address =
+        json.decode(await rootBundle.loadString("assets/json/address.json"));
+    await database.transaction((txn) async {
+      for (var i = 0; i < 5; i++) {
+        try{
+          int index = Random().nextInt(1000);
+          await txn.rawInsert('''INSERT INTO `chatPublic` (
+  `publicname`,
+  `aver`,
+  `autoChat`
+) 
+VALUES
+  (
+    '${address['data'][index]['username']}',
+    '${address['data'][index]['aver']}',
+    ''
+  )''');
+        }catch(e){
+          int index = Random().nextInt(1000);
+          await txn.rawInsert('''INSERT INTO `chatPublic` (
+  `publicname`,
+  `aver`,
+  `autoChat`
+) 
+VALUES
+  (
+    '${address['data'][index]['username']}',
+    '${address['data'][index]['aver']}',
+    ''
+  )''');
+          print('公众号重复，重新生成');
+        }
+      }
+    });
+    print('生成公众号');
+  }
+
+//  获取全部公众号
+  Future<List<Map>> getChatPublic() async {
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery('SELECT * FROM chatPublic');
+    return list;
+  }
+
+//  获取公众号聊天信息
+  Future<List<Map>> getChatPublicContent(chatPublicId)async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery('SELECT * FROM chatPublicContent where publicId = $chatPublicId');
+    return list;
+  }
+
+//  获取公众号信息
+  Future<Map> getChatPublicInfo(id)async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery('SELECT * FROM chatPublic where id = $id');
+    return list[0];
+  }
+//  更改公众号信息
+  void editChatPublicInfo(chatPublicId,publicName,aver,autoChat)async{
+    Database database = await openBase();
+    await database.rawUpdate(
+        'UPDATE chatPublic SET publicname = ?, aver = ?, autoChat = ? WHERE id = ?',
+        [publicName, aver,autoChat,chatPublicId]);
+    print('更改成功');
+  }
+//  发消息给公众号
+  void sendMessage(chatPublicId,chat)async{
+    Database database = await openBase();
+    await database.transaction((txn) async {
+      await txn.rawInsert('''INSERT INTO `chatPublicContent` (
+  `chat`,
+  `before`,
+  `publicId`
+) 
+VALUES
+  (
+    '$chat',
+    'my',
+    '$chatPublicId'
+  )''');
+    });
+    print('发送成功');
+  }
+//  自动回复
+  void autoMessage(chatPublicId)async{
+    Map map = await getChatPublicInfo(chatPublicId);
+//    判断是否自动回复
+    if(map['autoChat']!=''){
+      Database database = await openBase();
+      await database.transaction((txn) async {
+        await txn.rawInsert('''INSERT INTO `chatPublicContent` (
+  `chat`,
+  `before`,
+  `publicId`
+) 
+VALUES
+  (
+    '${map['autoChat']}',
+    'other',
+    '$chatPublicId'
+  )''');
+      });
+      print('自动回复成功');
+    }
+  }
+
+//  搜索通讯录
+  Future<List<Map>> searchAddress(name)async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery("SELECT * FROM address where username like '%$name%'");
+    return list;
+  }
+//  搜索公众号
+  Future<List<Map>> searchChatPublic(name)async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery("SELECT * FROM chatPublic where publicname like '%$name%'");
+    return list;
+  }
+//  获取通讯录
+  Future<List<Map>> getAddressList()async{
+    Database database = await openBase();
+    List<Map> list = await database.rawQuery("SELECT * FROM address");
+    return list;
+  }
+
   void initChat() async {
     Database database = await openBase();
     List before = ['other', 'my'];
@@ -191,7 +333,7 @@ VALUES
     print('生成聊天信息');
   }
 
-  sendLocation(int id , Map map)async{
+  sendLocation(int id, Map map) async {
     Database database = await openBase();
     await database.transaction((txn) async {
       await txn.rawInsert('''INSERT INTO `chatcontent` (
@@ -228,11 +370,12 @@ VALUES
 
   Future<List<Map>> getChatContentRever(id) async {
     Database database = await openBase();
-    List<Map> list = await database.rawQuery('SELECT * FROM chatcontent where user = $id');
+    List<Map> list =
+        await database.rawQuery('SELECT * FROM chatcontent where user = $id');
     return list;
   }
 
-  Future sendChatContent(content,id) async {
+  Future sendChatContent(content, id) async {
     Database database = await openBase();
     await database.transaction((txn) async {
       await txn.rawInsert('''INSERT INTO `chatcontent` (
@@ -251,7 +394,7 @@ VALUES
     });
   }
 
-  Future sendChatImage(content,id) async {
+  Future sendChatImage(content, id) async {
     Database database = await openBase();
     await database.transaction((txn) async {
       await txn.rawInsert('''INSERT INTO `chatcontent` (
@@ -270,17 +413,18 @@ VALUES
     });
   }
 
-  Future<bool> vChatUser(addressId)async{
+  Future<bool> vChatUser(addressId) async {
     Database database = await openBase();
-    List<Map> list = await database.rawQuery('SELECT * FROM chatuser where user = $addressId');
-    if(list.isEmpty){
+    List<Map> list = await database
+        .rawQuery('SELECT * FROM chatuser where user = $addressId');
+    if (list.isEmpty) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
 
-  Future<int> addChatUser(addressId)async{
+  Future<int> addChatUser(addressId) async {
     Database database = await openBase();
     await database.transaction((txn) async {
       int state = await txn.rawInsert('''INSERT INTO `chatuser` (`user`) 

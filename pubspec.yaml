@@ -42,6 +42,8 @@ dependencies:
   dio: ^3.0.9
   bot_toast: ^3.0.0
   qr_flutter: ^3.2.0
+  ffloat: ^1.0.1
+  qr_code_scanner: ^0.0.13
 
 dev_dependencies:
   hive_generator: ^0.7.0+2
@@ -106,6 +108,7 @@ flutter:
    - assets/json/content.json
    - assets/json/images.json
    - assets/images/location/map.png
+   - assets/images/index/qunfa.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

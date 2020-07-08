@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:faker/faker.dart';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/config/config.dart';
@@ -123,7 +124,6 @@ class _LoginStepState extends State<LoginStep> {
                     box.put('user', phone);
                     box.put('username', faker.person.name());
                     FakeAddress();
-                    Navigator.of(context).pushAndRemoveUntil(AnimateRouter(Home()), (route) => false);
                   }
                 },
                 child: Container(
@@ -251,8 +251,12 @@ class _LoginStepState extends State<LoginStep> {
   }
 
   void initDataBase() async{
+    BotToast.showLoading();
     await SqliteTool().initAddress();
     await SqliteTool().initFriendsCircle();
     await SqliteTool().initChat();
+    await SqliteTool().initChatPublic();
+    BotToast.closeAllLoading();
+    Navigator.of(context).pushAndRemoveUntil(AnimateRouter(Home()), (route) => false);
   }
 }

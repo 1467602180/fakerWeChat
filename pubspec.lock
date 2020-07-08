@@ -232,6 +232,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.1"
+  ffloat:
+    dependency: "direct main"
+    description:
+      name: ffloat
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   file:
     dependency: transitive
     description:
@@ -536,6 +543,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.3.0"
+  qr_code_scanner:
+    dependency: "direct main"
+    description:
+      name: qr_code_scanner
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.13"
   qr_flutter:
     dependency: "direct main"
     description:

@@ -1,5 +1,6 @@
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/friendscircle.dart';
+import 'package:fakewechat/layouts/search.dart';
 import 'package:flutter/material.dart';
 
 class Find extends StatefulWidget {
@@ -17,7 +18,9 @@ class _FindState extends State<Find> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.search), onPressed: () {}),
+          IconButton(icon: Icon(Icons.search), onPressed: () {
+            Navigator.of(context).push(AnimateRouter(Search()));
+          }),
           IconButton(icon: Icon(Icons.add_circle_outline), onPressed: () {}),
         ],
       ),

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/addressinfo.dart';
 import 'package:fakewechat/layouts/catlocation.dart';
@@ -477,77 +475,7 @@ class _ChatState extends State<Chat> {
                     onTap: () {
                       Navigator.of(context).pop();
                     },
-                    onLongPress: () {
-//                      showModalBottomSheet(
-//                        context: context,
-//                        builder: (context) {
-//                          return Column(
-//                            mainAxisSize: MainAxisSize.min,
-//                            children: [
-//                              GestureDetector(
-//                                child: Container(
-//                                  height: 50,
-//                                  decoration: BoxDecoration(
-//                                    color: Colors.white,
-//                                  ),
-//                                  child: Text(
-//                                    '保存到手机',
-//                                    style: TextStyle(
-//                                        fontSize: 16, fontWeight: FontWeight.w600),
-//                                  ),
-//                                  alignment: Alignment.center,
-//                                ),
-//                                onTap: () {},
-//                              ),
-//                              Divider(
-//                                height: 0.5,
-//                                color: Color(0xfff1f1f1),
-//                              ),
-//                              GestureDetector(
-//                                child: Container(
-//                                  height: 50,
-//                                  decoration: BoxDecoration(
-//                                    color: Colors.white,
-//                                  ),
-//                                  child: Text(
-//                                    '扫描二维码',
-//                                    style: TextStyle(
-//                                        fontSize: 16, fontWeight: FontWeight.w600),
-//                                  ),
-//                                  alignment: Alignment.center,
-//                                ),
-//                                onTap: () {
-//                                  readQR(dataList['chat']);
-//                                },
-//                              ),
-//                              Divider(
-//                                height: 0.5,
-//                                color: Color(0xfff1f1f1),
-//                              ),
-//                              Container(height: 10,color: Color(0xfff6f6f6),),
-//                              GestureDetector(
-//                                child: Container(
-//                                  height: 50,
-//                                  decoration: BoxDecoration(
-//                                    color: Colors.white,
-//                                  ),
-//                                  child: Text(
-//                                    '取消',
-//                                    style: TextStyle(
-//                                        fontSize: 16, fontWeight: FontWeight.w600),
-//                                  ),
-//                                  alignment: Alignment.center,
-//                                ),
-//                                onTap: () {
-//                                  Navigator.of(context).pop();
-//                                },
-//                              ),
-//                            ],
-//                          );
-//                        },
-//                        backgroundColor: Colors.transparent,
-//                      );
-                    },
+                    onLongPress: () {},
                     child: Image.network(
                       dataList['chat'],
                       fit: BoxFit.contain,
