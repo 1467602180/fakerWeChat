@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/config/config.dart';
 import 'package:flustars/flustars.dart';
@@ -37,6 +38,13 @@ class _RegisterState extends State<Register> {
     } else {
       return false;
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    BotToast.showText(text: '无需注册，请返回登录');
   }
 
   @override
@@ -254,13 +262,7 @@ class _RegisterState extends State<Register> {
                         : Color(0xffe6e6e6)),
                 child: FlatButton(
                   onPressed: () {
-                    if(vInfo()){
-                      box.put('user', phone);
-                      box.put('username', username);
-                      box.put('aver', imageData);
-                      box.put('haveLogin', true);
-                      Navigator.of(context).pushAndRemoveUntil(AnimateRouter(Home()), (route) => false);
-                    }
+                    BotToast.showText(text: '无需注册，请返回登录');
                   },
                   child: Container(
                     width: double.infinity,

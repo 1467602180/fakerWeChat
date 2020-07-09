@@ -1,3 +1,6 @@
+import 'package:bot_toast/bot_toast.dart';
+import 'package:fakewechat/compents/animaterouter.dart';
+import 'package:fakewechat/layouts/qunfaview.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +32,9 @@ class _SelectAddressState extends State<SelectAddress> {
         title: Text('选择收信人'),
         actions: [
           FlatButton(
-              onPressed: () {},
+              onPressed: () {
+                toQunFa();
+              },
               child: Container(
                 width: 52,
                 height: 28,
@@ -44,57 +49,48 @@ class _SelectAddressState extends State<SelectAddress> {
               ))
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Container(
+      body: ListView.builder(
+        itemBuilder: (context, index) {
+          return Container(
             height: 60,
-          ),
-          Flexible(
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return Container(
-                  height: 60,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: Checkbox(
-                          value: selectList[index],
-                          onChanged: (v) {
-                            setState(() {
-                              selectList[index] = v;
-                            });
-                          },
-                          activeColor: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      Container(
-                        width: 60,
-                        alignment: Alignment.center,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                            child: Image.network(
-                          list[index]['aver'],
-                          width: 40,
-                          height: 40,
-                        )),
-                      ),
-                      Flexible(child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(list[index]['username']),
-                      ))
-                    ],
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 60,
+                  alignment: Alignment.center,
+                  child: Checkbox(
+                    value: selectList[index],
+                    onChanged: (v) {
+                      setState(() {
+                        selectList[index] = v;
+                      });
+                    },
+                    activeColor: Theme.of(context).primaryColor,
                   ),
-                );
-              },
-              itemCount: list.length,
-              physics: BouncingScrollPhysics(),
+                ),
+                Container(
+                  width: 60,
+                  alignment: Alignment.center,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                      child: Image.network(
+                    list[index]['aver'],
+                    width: 40,
+                    height: 40,
+                  )),
+                ),
+                Flexible(child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(list[index]['username']),
+                ))
+              ],
             ),
-          ),
-        ],
+          );
+        },
+        itemCount: list.length,
+        physics: BouncingScrollPhysics(),
       ),
     );
   }
@@ -111,5 +107,19 @@ class _SelectAddressState extends State<SelectAddress> {
       list = dataList;
       selectList = dataSelectList;
     });
+  }
+
+  void toQunFa() {
+    List<Map> dataList = [];
+    for(var i=0;i<selectList.length;i++){
+      if(selectList[i]==true){
+        dataList.add(list[i]);
+      }
+    }
+    if(dataList.length!=0){
+      Navigator.of(context).push(AnimateRouter(QunFaView(list: dataList)));
+    }else{
+      BotToast.showText(text: '请选择群发联系人');
+    }
   }
 }

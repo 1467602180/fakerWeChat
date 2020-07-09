@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_map_fluttify/amap_map_fluttify.dart';
 import 'package:amap_search_fluttify/amap_search_fluttify.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class LocationView extends StatefulWidget {
   @override
@@ -14,6 +17,17 @@ class _LocationState extends State<LocationView> with AmapSearchDisposeMixin {
   AmapController amapController;
   List<Poi> addressList = [];
   int listIndex = 0;
+
+  Future<bool> requestPermission() async {
+    final status = await Permission.location.request();
+
+    if (status == PermissionStatus.granted) {
+      return true;
+    } else {
+      BotToast.showText(text: '无法正常使用，请授权定位权限');
+      return false;
+    }
+  }
 
   @override
   void initState(){
@@ -53,9 +67,11 @@ class _LocationState extends State<LocationView> with AmapSearchDisposeMixin {
         Expanded(child: Container(
           child: AmapView(
             onMapCreated: (controller)async{
-              amapController = controller;
-              await controller.showMyLocation(MyLocationOption(show: true,fillColor: Colors.transparent,strokeColor: Colors.transparent));
-              getAddressList();
+              if (await requestPermission()) {
+                amapController = controller;
+                await controller.showMyLocation(MyLocationOption(show: true,fillColor: Colors.transparent,strokeColor: Colors.transparent));
+                getAddressList();
+              }
             },
             // 缩放级别 (可选)
             zoomLevel: 19,
@@ -93,15 +109,13 @@ class _LocationState extends State<LocationView> with AmapSearchDisposeMixin {
   }
 
   void getAddressList()async {
-    Timer(Duration(milliseconds: 500), ()async{
-      /// 搜索周边poi
-      final poiList = await AmapSearch.searchAround(
-          await amapController.getLocation(),
-      keyword: ''
-      );
-      setState(() {
+    /// 搜索周边poi
+    final poiList = await AmapSearch.searchAround(
+        await amapController.getLocation(),
+        keyword: ''
+    );
+    setState(() {
       addressList = poiList;
-      });
     });
   }
 

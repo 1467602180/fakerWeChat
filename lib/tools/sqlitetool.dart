@@ -298,6 +298,13 @@ VALUES
     List<Map> list = await database.rawQuery("SELECT * FROM address");
     return list;
   }
+//  删除聊天记录
+  void deleteChat(chatUserId)async{
+    Database database = await openBase();
+    await database.rawDelete('DELETE FROM chatContent WHERE user = ?', [chatUserId]);
+    await database.rawDelete('DELETE FROM chatUser WHERE id = ?', [chatUserId]);
+    print('删除记录成功');
+  }
 
   void initChat() async {
     Database database = await openBase();

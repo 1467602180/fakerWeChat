@@ -44,6 +44,7 @@ dependencies:
   qr_flutter: ^3.2.0
   ffloat: ^1.0.1
   qr_code_scanner: ^0.0.13
+  permission_handler: ^5.0.1+1
 
 dev_dependencies:
   hive_generator: ^0.7.0+2

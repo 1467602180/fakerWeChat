@@ -144,42 +144,44 @@ class _PushFriendsCircleState extends State<PushFriendsCircle> {
     for(var i in imageList){
       list.add(Image.network(i,fit: BoxFit.cover,));
     }
-    list.add(GestureDetector(
-      onTap: (){
-        showDialog(context: context,builder: (context){
-          return AlertDialog(
-            title: Text('增加图像'),
-            content: TextField(
-              controller: addController,
-              decoration: InputDecoration(hintText: '图像链接'),
-            ),
-            actions: [
-              FlatButton(onPressed: (){
-                Navigator.of(context).pop();
-              }, child: Text('取消')),
-              FlatButton(onPressed: (){
-                if(addController.text.isNotEmpty&&RegexUtil.isURL(addController.text)){
-                  setState(() {
-                    imageList.add(addController.text);
-                  });
-                  addController.text = '';
+    if(imageList.length<9){
+      list.add(GestureDetector(
+        onTap: (){
+          showDialog(context: context,builder: (context){
+            return AlertDialog(
+              title: Text('增加图像'),
+              content: TextField(
+                controller: addController,
+                decoration: InputDecoration(hintText: '图像链接'),
+              ),
+              actions: [
+                FlatButton(onPressed: (){
                   Navigator.of(context).pop();
-                }
-              }, child: Text('确定')),
-            ],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8)
-            ),
-          );
-        },);
-      },
-      child: Container(
-        width: MediaQuery.of(context).size.width*0.35,
-        color: Color(0xfff7f7f7),
-        alignment: Alignment.center,
-        child: Icon(Icons.add),
-      ),
-    ));
+                }, child: Text('取消')),
+                FlatButton(onPressed: (){
+                  if(addController.text.isNotEmpty&&RegexUtil.isURL(addController.text)){
+                    setState(() {
+                      imageList.add(addController.text);
+                    });
+                    addController.text = '';
+                    Navigator.of(context).pop();
+                  }
+                }, child: Text('确定')),
+              ],
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+              ),
+            );
+          },);
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width*0.35,
+          color: Color(0xfff7f7f7),
+          alignment: Alignment.center,
+          child: Icon(Icons.add),
+        ),
+      ));
+    }
     return list;
  }
 }

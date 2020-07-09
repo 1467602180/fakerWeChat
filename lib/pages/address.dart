@@ -2,8 +2,10 @@ import 'package:fakewechat/compents/animaterouter.dart';
 import 'package:fakewechat/layouts/addressinfo.dart';
 import 'package:fakewechat/layouts/chatpublic.dart';
 import 'package:fakewechat/layouts/edituserinfo.dart';
+import 'package:fakewechat/layouts/qrview.dart';
 import 'package:fakewechat/layouts/search.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
+import 'package:ffloat/ffloat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -17,6 +19,7 @@ class _AddressState extends State<Address> {
 
   Box box = Hive.box('hive');
   List address = [];
+  FFloatController fFloatController = FFloatController();
 
   @override
   void initState() {
@@ -40,7 +43,119 @@ class _AddressState extends State<Address> {
             IconButton(icon: Icon(Icons.search), onPressed: () {
               Navigator.of(context).push(AnimateRouter(Search()));
             }),
-            IconButton(icon: Icon(Icons.add_circle_outline), onPressed: () {}),
+            FFloat((_){
+              return Container(
+                width: 160,
+                height: 260,
+                decoration: BoxDecoration(
+                    color: Color(0xff4c4c4c),
+                    borderRadius: BorderRadius.circular(8)
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Container(height: 50,child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          width: 50,
+                          alignment: Alignment.center,
+                          child: Icon(Icons.message,size: 20,color: Colors.white,),
+                        ),
+                        Flexible(child: Container(
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Color(0xff545454)))
+                          ),
+                          child: Text('发起群聊',style: TextStyle(color: Colors.white,fontSize: 18),),
+                        ))
+                      ],
+                    ),),
+                    Container(height: 50,child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          width: 50,
+                          alignment: Alignment.center,
+                          child: Icon(Icons.add,size: 20,color: Colors.white,),
+                        ),
+                        Flexible(child: Container(
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Color(0xff545454)))
+                          ),
+                          child: Text('添加朋友',style: TextStyle(color: Colors.white,fontSize: 18),),
+                        ))
+                      ],
+                    ),),
+                    GestureDetector(
+                      onTap: (){
+                        fFloatController.dismiss();
+                        Navigator.of(context).push(AnimateRouter(QRScreenView()));
+                      },
+                      child: Container(height: 50,child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Container(
+                            width: 50,
+                            alignment: Alignment.center,
+                            child: Icon(Icons.camera_alt,size: 20,color: Colors.white,),
+                          ),
+                          Flexible(child: Container(
+                            alignment: Alignment.centerLeft,
+                            decoration: BoxDecoration(
+                                border: Border(bottom: BorderSide(color: Color(0xff545454)))
+                            ),
+                            child: Text('扫一扫',style: TextStyle(color: Colors.white,fontSize: 18),),
+                          ))
+                        ],
+                      ),),
+                    ),
+                    Container(height: 50,child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          width: 50,
+                          alignment: Alignment.center,
+                          child: Icon(Icons.monetization_on,size: 20,color: Colors.white,),
+                        ),
+                        Flexible(child: Container(
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Color(0xff545454)))
+                          ),
+                          child: Text('收付款',style: TextStyle(color: Colors.white,fontSize: 18),),
+                        ))
+                      ],
+                    ),),
+                    Container(height: 50,child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Container(
+                          width: 50,
+                          alignment: Alignment.center,
+                          child: Icon(Icons.help,size: 20,color: Colors.white,),
+                        ),
+                        Flexible(child: Container(
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Color(0xff545454)))
+                          ),
+                          child: Text('帮助与反馈',style: TextStyle(color: Colors.white,fontSize: 18),),
+                        ))
+                      ],
+                    ),),
+                  ],
+                ),
+              );
+            },
+              anchor: IconButton(icon: Icon(Icons.add_circle_outline), onPressed: () {
+                fFloatController.show();
+              }),
+              controller: fFloatController,
+              alignment: FFloatAlignment.bottomCenter,
+              color: Colors.transparent,
+              margin: EdgeInsets.only(right: 60),
+            ),
           ],
         ),
         body: Stack(

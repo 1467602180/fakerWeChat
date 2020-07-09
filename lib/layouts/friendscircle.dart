@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:fakewechat/compents/animaterouter.dart';
+import 'package:fakewechat/layouts/addressinfo.dart';
 import 'package:fakewechat/layouts/pushfriendscircle.dart';
 import 'package:fakewechat/tools/sqlitetool.dart';
 import 'package:flutter/cupertino.dart';
@@ -251,16 +252,23 @@ class _FriendsCircleState extends State<FriendsCircle> {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 40,
-                        alignment: Alignment.center,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Image.network(
-                            friendsCircle[index]['user']['aver'],
-                            width: 36,
-                            height: 36,
-                            fit: BoxFit.fill,
+                      GestureDetector(
+                        onTap: (){
+                          if(friendsCircle[index]['user']['id']!=1){
+                            Navigator.of(context).push(AnimateRouter(AddressInfo(info: friendsCircle[index]['user'])));
+                          }
+                        },
+                        child: Container(
+                          width: 40,
+                          alignment: Alignment.center,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.network(
+                              friendsCircle[index]['user']['aver'],
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                         ),
                       ),
@@ -308,20 +316,43 @@ class _FriendsCircleState extends State<FriendsCircle> {
                                               mainAxisSpacing: 1,
                                               crossAxisSpacing: 1),
                                       itemBuilder: (context, imageIndex) {
-                                        return Container(
-                                          child: Image.network(
-                                            friendsCircle[index]['images']
-                                                [imageIndex]['image'],
-                                            fit: BoxFit.fill,
-                                            loadingBuilder: (context,child,progress){
-                                              if(progress==null){
-                                                return child;
-                                              }
-                                              return Container(
-                                                alignment: Alignment.center,
-                                                child: CircularProgressIndicator(),
+                                        return GestureDetector(
+                                          onTap: (){
+                                            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                                              return Scaffold(
+                                                backgroundColor: Colors.black,
+                                                body: Container(
+                                                  alignment: Alignment.center,
+                                                  child: GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      onLongPress: () {},
+                                                      child: Image.network(
+                                                        friendsCircle[index]['images']
+                                                        [imageIndex]['image'],
+                                                        fit: BoxFit.contain,
+                                                        width: MediaQuery.of(context).size.width*0.95,
+                                                      )),
+                                                ),
                                               );
-                                            },
+                                            }));
+                                          },
+                                          child: Container(
+                                            child: Image.network(
+                                              friendsCircle[index]['images']
+                                                  [imageIndex]['image'],
+                                              fit: BoxFit.fill,
+                                              loadingBuilder: (context,child,progress){
+                                                if(progress==null){
+                                                  return child;
+                                                }
+                                                return Container(
+                                                  alignment: Alignment.center,
+                                                  child: CircularProgressIndicator(),
+                                                );
+                                              },
+                                            ),
                                           ),
                                         );
                                       },

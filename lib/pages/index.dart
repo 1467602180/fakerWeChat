@@ -159,152 +159,168 @@ class _IndexState extends State<Index> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        child: Column(
-          children: <Widget>[
-            ListView.builder(
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: (){
-                    Navigator.of(context).push(AnimateRouter(Chat(chatData: chatUser[index]))).then((value) => getData());
-                  },
-                  onLongPress: (){
-
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    height: 70,
-                    color: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 45,
-                          alignment: Alignment.center,
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: Image.network(
-                                chatUser[index]['aver'],
-                                width: 45,
-                                height: 45,
-                                fit: BoxFit.fill,
-                              )),
-                        ),
-                        Container(
-                          width: 16,
-                        ),
-                        Flexible(
-                            child: Column(
-                          children: [
-                            Flexible(
-                              child: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      chatUser[index]['username'],
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                    Container(
-                                      height: 3,
-                                    ),
-                                    Text(
-                                      chatUser[index]['chat'][
-                                                  chatUser[index]['chat'].length -
-                                                      1]['type'] ==
-                                              'content'
-                                          ? chatUser[index]['chat']
-                                                  [chatUser[index]['chat'].length - 1]
-                                              ['chat']
-                                          : chatUser[index]['chat'][
-                                                      chatUser[index]['chat'].length -
-                                                          1]['type'] ==
-                                                  'image'
-                                              ? '[图片]'
-                                              : '[定位]',
-                                      style: TextStyle(color: Color(0xffc5c5c5),fontSize: 12,fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: <Widget>[
+              ListView.builder(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).push(AnimateRouter(Chat(chatData: chatUser[index]))).then((value) => getData());
+                    },
+                    onLongPress: (){
+//                      showDialog(context: context,builder: (context){
+//                        return AlertDialog(
+//                          title: Text('操作提示'),
+//                          content: Text('确认删除该聊天记录'),
+//                          actions: <Widget>[
+//                            FlatButton(onPressed: (){Navigator.of(context).pop();}, child: Text('取消')),
+//                            FlatButton(onPressed: ()async{
+//                              Navigator.of(context).pop();
+//                              await SqliteTool().deleteChat(chatUser[index]['id']);
+//                              getData();
+//                            }, child: Text('确定')),
+//                          ],
+//                        );
+//                      });
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 70,
+                      color: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 45,
+                            alignment: Alignment.center,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: Image.network(
+                                  chatUser[index]['aver'],
+                                  width: 45,
+                                  height: 45,
+                                  fit: BoxFit.fill,
+                                )),
+                          ),
+                          Container(
+                            width: 16,
+                          ),
+                          Flexible(
+                              child: Column(
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        chatUser[index]['username'],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 16),
+                                      ),
+                                      Container(
+                                        height: 3,
+                                      ),
+                                      Text(
+                                        chatUser[index]['chat'][
+                                                    chatUser[index]['chat'].length -
+                                                        1]['type'] ==
+                                                'content'
+                                            ? chatUser[index]['chat']
+                                                    [chatUser[index]['chat'].length - 1]
+                                                ['chat']
+                                            : chatUser[index]['chat'][
+                                                        chatUser[index]['chat'].length -
+                                                            1]['type'] ==
+                                                    'image'
+                                                ? '[图片]'
+                                                : '[定位]',
+                                        style: TextStyle(color: Color(0xffc5c5c5),fontSize: 12,fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            Divider(
-                              height: 1,
-                            )
-                          ],
-                        ))
-                      ],
+                              Divider(
+                                height: 1,
+                              )
+                            ],
+                          ))
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-              itemCount: chatUser.length,
-              physics: NeverScrollableScrollPhysics(),
-            ),
-            GestureDetector(
-              onTap: (){
-                Navigator.of(context).push(AnimateRouter(SelectAddress()));
-              },
-              onLongPress: (){
-
-              },
-              child: Container(
-                width: double.infinity,
-                height: 70,
-                color: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 45,
-                      alignment: Alignment.center,
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: Image.asset(
-                            'assets/images/index/qunfa.png',
-                            width: 30,
-                            height: 30,
-                            fit: BoxFit.fill,
-                          )),
-                    ),
-                    Container(
-                      width: 16,
-                    ),
-                    Flexible(
-                        child: Column(
-                          children: [
-                            Flexible(
-                              child: Container(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '群发助手',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ))
-                  ],
-                ),
+                  );
+                },
+                itemCount: chatUser.length,
+                physics: NeverScrollableScrollPhysics(),
               ),
-            )
-          ],
+              GestureDetector(
+                onTap: (){
+                  Navigator.of(context).push(AnimateRouter(SelectAddress())).then((value) => getData());
+                },
+                onLongPress: (){
+
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 70,
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 45,
+                        alignment: Alignment.center,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.asset(
+                              'assets/images/index/qunfa.png',
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.fill,
+                            )),
+                      ),
+                      Container(
+                        width: 16,
+                      ),
+                      Flexible(
+                          child: Column(
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '群发助手',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ))
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
